@@ -20,8 +20,8 @@
             <add-to-group group-id="ToolsMenu"/>
         </action>
 
-        <action id="org.jetbrains.TestTaskAction2" class="org.jetbrains.TestTaskAction2" text="Test Task Action 2"
-                description="Test task action 2">
+        <action id="org.jetbrains.ShoweExternalLibrariesAction" class="org.jetbrains.ShoweExternalLibrariesAction" text="Show External Libraries"
+                description="Show external libraries">
             <add-to-group group-id="ToolsMenu"/>
         </action>
 
