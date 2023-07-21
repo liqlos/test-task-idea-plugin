@@ -9,21 +9,20 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 
 class KotlinPluginVersionAction : AnAction() {
-    private val KOTLIN_PLUGIN_ID = "org.jetbrains.kotlin"
 
+    private val kotlinPluginId = "org.jetbrains.kotlin"
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     override fun update(e: AnActionEvent) {
         //Спросить, Что если я удалю уже установленный котлин плагин, выполнится ли update снова?
-        e.presentation.isEnabled = PluginManagerCore.isPluginInstalled(PluginId.getId(KOTLIN_PLUGIN_ID))
+        e.presentation.isEnabled = PluginManagerCore.isPluginInstalled(PluginId.getId(kotlinPluginId))
     }
 
     override fun actionPerformed(e: AnActionEvent) {
-        //Using the event, implement an action. For example, create and show a dialog.
         val currentProject: Project = e.project!!
 
         //At this point we are sure that kotlin plugin is installed
-        val kotlinPluginVersion: String = PluginManagerCore.getPlugin(PluginId.getId(KOTLIN_PLUGIN_ID))!!.version
+        val kotlinPluginVersion: String = PluginManagerCore.getPlugin(PluginId.getId(kotlinPluginId))!!.version
 
         Messages.showMessageDialog(
             currentProject,
