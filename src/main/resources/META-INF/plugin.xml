@@ -16,17 +16,17 @@
     <actions>
         <!-- Add your actions here -->
         <action id="org.jetbrains.KotlinPluginVersionAction" class="org.jetbrains.KotlinPluginVersionAction" text="Show Kotlin Plugin Version"
-                description="Show kotlin plugin version">
+                description="Shows installed kotlin plugin version">
             <add-to-group group-id="ToolsMenu"/>
         </action>
 
-        <action id="org.jetbrains.ShoweExternalLibrariesAction" class="org.jetbrains.ShoweExternalLibrariesAction" text="Show External Libraries"
-                description="Show external libraries">
+        <action id="org.jetbrains.ShowExternalLibrariesAction" class="org.jetbrains.ShowExternalLibrariesAction" text="Show External Libraries"
+                description="Shows external libraries">
             <add-to-group group-id="ToolsMenu"/>
         </action>
 
-        <action id="org.jetbrains.TestTaskAction3" class="org.jetbrains.TestTaskAction3" text="Test Task Action 3"
-                description="Test task action 3">
+        <action id="org.jetbrains.ShowLineMarkersAction" class="org.jetbrains.ShowLineMarkersAction" text="Show Line Markers of Main.Kt File"
+                description="Shows line markers of Main.kt file">
             <add-to-group group-id="ToolsMenu"/>
         </action>
     </actions>

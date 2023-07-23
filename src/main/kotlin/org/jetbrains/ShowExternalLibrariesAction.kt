@@ -6,14 +6,13 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar
 import com.intellij.openapi.ui.Messages
-import com.intellij.openapi.util.NlsSafe
 import org.jetbrains.annotations.NotNull
 
-class ShoweExternalLibrariesAction : AnAction() {
+class ShowExternalLibrariesAction : AnAction() {
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabled = getProjectLibrariesNames(e.project!!).isNotEmpty()
+        e.presentation.isEnabled = e.project != null && getProjectLibrariesNames(e.project!!).isNotEmpty()
     }
 
     override fun actionPerformed(e: AnActionEvent) {
@@ -27,7 +26,7 @@ class ShoweExternalLibrariesAction : AnAction() {
         )
     }
 
-    private fun getProjectLibrariesNames(@NotNull project: Project): List<@NlsSafe String?> {
+    private fun getProjectLibrariesNames(@NotNull project: Project): List<String?> {
         val projectLibraries = LibraryTablesRegistrar.getInstance().getLibraryTable(project).libraries
         return projectLibraries.map { it.name }
     }

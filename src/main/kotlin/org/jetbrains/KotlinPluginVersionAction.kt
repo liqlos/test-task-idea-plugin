@@ -9,13 +9,12 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 
 class KotlinPluginVersionAction : AnAction() {
-
-    private val kotlinPluginId = "org.jetbrains.kotlin"
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
+    private val kotlinPluginId = "org.jetbrains.kotlin"
+
     override fun update(e: AnActionEvent) {
-        //Спросить, Что если я удалю уже установленный котлин плагин, выполнится ли update снова?
-        e.presentation.isEnabled = PluginManagerCore.isPluginInstalled(PluginId.getId(kotlinPluginId))
+        e.presentation.isEnabledAndVisible = e.project != null && PluginManagerCore.isPluginInstalled(PluginId.getId(kotlinPluginId))
     }
 
     override fun actionPerformed(e: AnActionEvent) {
