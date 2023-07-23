@@ -8,20 +8,22 @@ import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 
+
+private const val KOTLIN_PLUGIN_ID = "org.jetbrains.kotlin"
+
 class KotlinPluginVersionAction : AnAction() {
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
-    private val kotlinPluginId = "org.jetbrains.kotlin"
 
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabledAndVisible = e.project != null && PluginManagerCore.isPluginInstalled(PluginId.getId(kotlinPluginId))
+        e.presentation.isEnabledAndVisible = e.project != null && PluginManagerCore.isPluginInstalled(PluginId.getId(KOTLIN_PLUGIN_ID))
     }
 
     override fun actionPerformed(e: AnActionEvent) {
         val currentProject: Project = e.project!!
 
         //At this point we are sure that kotlin plugin is installed
-        val kotlinPluginVersion: String = PluginManagerCore.getPlugin(PluginId.getId(kotlinPluginId))!!.version
+        val kotlinPluginVersion: String = PluginManagerCore.getPlugin(PluginId.getId(KOTLIN_PLUGIN_ID))!!.version
 
         Messages.showMessageDialog(
             currentProject,
