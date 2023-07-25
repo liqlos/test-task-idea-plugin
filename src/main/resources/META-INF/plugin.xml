@@ -8,6 +8,7 @@
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
@@ -15,19 +16,26 @@
 
     <actions>
         <!-- Add your actions here -->
-        <action id="org.jetbrains.KotlinPluginVersionAction" class="org.jetbrains.KotlinPluginVersionAction" text="Show Kotlin Plugin Version"
+        <action id="org.jetbrains.KotlinPluginVersionAction" class="org.jetbrains.KotlinPluginVersionAction"
+                text="Show Kotlin Plugin Version"
                 description="Shows installed kotlin plugin version">
             <add-to-group group-id="ToolsMenu"/>
         </action>
 
-        <action id="org.jetbrains.ShowExternalLibrariesAction" class="org.jetbrains.ShowExternalLibrariesAction" text="Show External Libraries"
+        <action id="org.jetbrains.ShowExternalLibrariesAction" class="org.jetbrains.ShowExternalLibrariesAction"
+                text="Show External Libraries"
                 description="Shows external libraries">
             <add-to-group group-id="ToolsMenu"/>
         </action>
 
-        <action id="org.jetbrains.ShowLineMarkersAction" class="org.jetbrains.ShowLineMarkersAction" text="Show Line Markers of Main.Kt File"
+        <action id="org.jetbrains.ShowLineMarkersAction" class="org.jetbrains.ShowLineMarkersAction"
+                text="Show Line Markers of Main.Kt File"
                 description="Shows line markers of Main.kt file">
             <add-to-group group-id="ToolsMenu"/>
+        </action>
+        <action id="org.jetbrains.RunKotlinFileAction" class="org.jetbrains.RunKotlinFileAction" text="Run Kotlin File"
+                description="Run kotlin file">
+            <add-to-group group-id="ToolsMenu"/>]
         </action>
     </actions>
 </idea-plugin>

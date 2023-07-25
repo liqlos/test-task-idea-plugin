@@ -17,6 +17,7 @@ dependencies {
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
     version.set("2023.1.3")
+    plugins.set(listOf("java"))
 }
 
 kotlin {

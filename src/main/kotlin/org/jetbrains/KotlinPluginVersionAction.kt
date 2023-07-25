@@ -16,7 +16,9 @@ class KotlinPluginVersionAction : AnAction() {
 
 
     override fun update(e: AnActionEvent) {
-        e.presentation.isEnabledAndVisible = e.project != null && PluginManagerCore.isPluginInstalled(PluginId.getId(KOTLIN_PLUGIN_ID))
+        e.presentation.isEnabledAndVisible = e.project != null && PluginManagerCore.isPluginInstalled(PluginId.getId(
+            KOTLIN_PLUGIN_ID
+        ))
     }
 
     override fun actionPerformed(e: AnActionEvent) {
