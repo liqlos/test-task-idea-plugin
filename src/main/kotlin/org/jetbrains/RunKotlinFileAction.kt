@@ -19,15 +19,15 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.search.FilenameIndex
+import com.intellij.psi.search.GlobalSearchScope
 import org.jetbrains.Util.showErrorMessage
 
 
-private const val MAIN_KT_FILE_PATH = "src/main/kotlin/Main.kt"
-private const val MAIN_CLASS_NAME = "MainKt"
+private const val KOTLIN_FILE_NAME = "Main.kt"
 
-class RunKotlinFileAction : AnAction() {
+private class RunKotlinFileAction : AnAction() {
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     override fun update(e: AnActionEvent) {
@@ -35,6 +35,7 @@ class RunKotlinFileAction : AnAction() {
     }
 
     override fun actionPerformed(e: AnActionEvent) {
+
         val currentProject = e.project!!
         val runManager = RunManager.getInstance(currentProject)
 
@@ -43,10 +44,12 @@ class RunKotlinFileAction : AnAction() {
 
 
         val mainKtFile =
-            currentProject.guessProjectDir()?.findFileByRelativePath(MAIN_KT_FILE_PATH) ?: return showErrorMessage(
-                currentProject,
-                "Main.kt file not found"
-            )
+            FilenameIndex.getVirtualFilesByName(KOTLIN_FILE_NAME, GlobalSearchScope.projectScope(currentProject))
+                .firstOrNull()
+                ?: return showErrorMessage(
+                    currentProject,
+                    "$KOTLIN_FILE_NAME is not found"
+                )
 
         val runConfiguration = createRunConfiguration(
             currentProject, mainKtFile, factory
@@ -71,17 +74,17 @@ class RunKotlinFileAction : AnAction() {
 
     private fun createRunConfiguration(
         project: Project,
-        mainKtFile: VirtualFile,
+        ktFile: VirtualFile,
         factory: ConfigurationFactory
     ): ApplicationConfiguration {
         val configuration: ApplicationConfiguration =
             factory.createTemplateConfiguration(project) as ApplicationConfiguration
 
-        configuration.mainClassName = MAIN_CLASS_NAME
+        configuration.mainClassName = ktFile.nameWithoutExtension + "Kt"
 
         val modules = ModuleManager.getInstance(project).modules
         if (modules.isNotEmpty()) {
-            configuration.setModule(ModuleUtilCore.findModuleForFile(mainKtFile, project))
+            configuration.setModule(ModuleUtilCore.findModuleForFile(ktFile, project))
         }
 
         return configuration
@@ -97,7 +100,7 @@ class RunKotlinFileAction : AnAction() {
                 Notifications.Bus.notify(
                     Notification(
                         "executionResultNotification",
-                        "Main.kt file execution result",
+                        "$KOTLIN_FILE_NAME file execution result",
                         "The exit code is $exitCode",
                         NotificationType.INFORMATION
                     ),

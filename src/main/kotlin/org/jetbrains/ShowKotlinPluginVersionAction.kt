@@ -11,9 +11,8 @@ import com.intellij.openapi.ui.Messages
 
 private const val KOTLIN_PLUGIN_ID = "org.jetbrains.kotlin"
 
-class ShowKotlinPluginVersionAction : AnAction() {
+private class ShowKotlinPluginVersionAction : AnAction() {
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
-
 
     override fun update(e: AnActionEvent) {
         e.presentation.isEnabledAndVisible = e.project != null && PluginManagerCore.isPluginInstalled(PluginId.getId(

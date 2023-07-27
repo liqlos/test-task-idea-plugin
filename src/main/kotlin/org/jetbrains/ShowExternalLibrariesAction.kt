@@ -8,7 +8,7 @@ import com.intellij.openapi.roots.libraries.LibraryTablesRegistrar
 import com.intellij.openapi.ui.Messages
 import org.jetbrains.annotations.NotNull
 
-class ShowExternalLibrariesAction : AnAction() {
+private class ShowExternalLibrariesAction : AnAction() {
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
     override fun update(e: AnActionEvent) {

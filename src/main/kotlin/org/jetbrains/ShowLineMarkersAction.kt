@@ -1,23 +1,28 @@
 package org.jetbrains
 
+import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer
+import com.intellij.codeInsight.daemon.LineMarkerInfo
+import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerEx
 import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerImpl
 import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.editor.Document
+import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.OpenFileDescriptor
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.project.guessProjectDir
 import com.intellij.openapi.ui.Messages
-import com.intellij.openapi.util.NlsContexts
+import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.search.FilenameIndex
+import com.intellij.psi.search.GlobalSearchScope
+import org.jetbrains.Util.showErrorMessage
+import org.jetbrains.annotations.NotNull
 
 
-private const val MAIN_KT_FILE_PATH = "src/main/kotlin/Main.kt"
-private const val TOOLTIP_REGEX = "<html><body><p>(.*?)</p>"
+private const val KOTLIN_FILE_NAME = "Main.kt"
 
-class ShowLineMarkersAction : AnAction() {
-
+private class ShowLineMarkersAction : AnAction() {
 
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
@@ -31,45 +36,60 @@ class ShowLineMarkersAction : AnAction() {
         val currentProject: Project = e.project!!
 
         val mainKtFile =
-            currentProject.guessProjectDir()?.findFileByRelativePath(MAIN_KT_FILE_PATH) ?: return showErrorMessage(
-                currentProject,
-                "Main.kt file not found"
-            )
+            FilenameIndex.getVirtualFilesByName(KOTLIN_FILE_NAME, GlobalSearchScope.projectScope(currentProject))
+                .firstOrNull()
+                ?: return showErrorMessage(
+                    currentProject,
+                    "$KOTLIN_FILE_NAME is not found"
+                )
 
-        val descriptor = OpenFileDescriptor(currentProject, mainKtFile)
-
+        val fileDescriptor = OpenFileDescriptor(currentProject, mainKtFile)
         val editor =
-            FileEditorManager.getInstance(currentProject).openTextEditor(descriptor, true) ?: return showErrorMessage(
-                currentProject, "Can't open code editor"
-            )
+            FileEditorManager.getInstance(currentProject).openTextEditor(fileDescriptor, true)
+                ?: return showErrorMessage(
+                    currentProject, "Can't open code editor"
+                )
 
         Messages.showMessageDialog(
             currentProject,
-            getLineMarkersForMessage(editor.document, currentProject),
+            formatLineMarkersForMessage(getLineMarkers(editor.document, currentProject)),
             "Task 3",
             Messages.getInformationIcon()
         )
     }
 
-    private fun getLineMarkersForMessage(document: Document, project: Project): String {
-        val lineMarkers = DaemonCodeAnalyzerImpl.getLineMarkers(document, project)
+    private fun getLineMarkers(document: Document, project: Project): MutableList<LineMarkerInfo<*>> {
+        var lineMarkers = mutableListOf<LineMarkerInfo<*>>()
+        val psiFile = PsiDocumentManager.getInstance(project).getPsiFile(document)!!
 
+        //DaemonCodeAnalyzerEx to have access to isErrorAnalyzingFinished
+        //seems like in fact isErrorAnalyzingFinished is true when all analyzing is finished
+        val codeAnalyzer = DaemonCodeAnalyzerEx.getInstanceEx(project)
+
+        if (codeAnalyzer.isErrorAnalyzingFinished(psiFile)) {
+            lineMarkers = DaemonCodeAnalyzerImpl.getLineMarkers(document, project)
+        } else {
+            val busConnection = project.messageBus.connect()
+            busConnection.subscribe(DaemonCodeAnalyzer.DAEMON_EVENT_TOPIC, object : DaemonCodeAnalyzer.DaemonListener {
+                override fun daemonFinished(fileEditors: Collection<FileEditor>) {
+                    lineMarkers = DaemonCodeAnalyzerImpl.getLineMarkers(document, project)
+                }
+            })
+            busConnection.disconnect()
+        }
+        return lineMarkers
+    }
+
+    private fun formatLineMarkersForMessage(@NotNull lineMarkers: List<LineMarkerInfo<*>>): String {
         return if (lineMarkers.isEmpty()) "There is no line markers in file"
-
         else lineMarkers.joinToString("\n") { lineMarkerInfo ->
             "${lineMarkerInfo.startOffset} ${lineMarkerInfo.endOffset} ${
                 lineMarkerInfo.lineMarkerTooltip?.let { tooltip ->
-                    Regex(TOOLTIP_REGEX).find(
+                    Regex("<html><body><p>(.*?)</p>").find(
                         tooltip
                     )?.groupValues?.get(1)
                 } ?: "No tooltip"
             }"
         }
-    }
-
-    private fun showErrorMessage(project: Project, @NlsContexts.DialogMessage message: String) {
-        Messages.showMessageDialog(
-            project, message, "Task 3", Messages.getWarningIcon()
-        )
     }
 }

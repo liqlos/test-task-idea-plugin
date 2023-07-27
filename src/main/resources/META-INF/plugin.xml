@@ -11,7 +11,8 @@
     <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <!-- Add your extensions here -->
+        <notificationGroup id="executionResultNotification"
+                           displayType="BALLOON"/>
     </extensions>
 
     <actions>
@@ -38,8 +39,4 @@
             <add-to-group group-id="ToolsMenu"/>]
         </action>
     </actions>
-    <extensions defaultExtensionNs="com.intellij">
-        <notificationGroup id="executionResultNotification"
-                           displayType="BALLOON"/>
-    </extensions>
 </idea-plugin>
