@@ -16,7 +16,7 @@
 
     <actions>
         <!-- Add your actions here -->
-        <action id="org.jetbrains.KotlinPluginVersionAction" class="org.jetbrains.KotlinPluginVersionAction"
+        <action id="org.jetbrains.ShowKotlinPluginVersionAction" class="org.jetbrains.ShowKotlinPluginVersionAction"
                 text="Show Kotlin Plugin Version"
                 description="Shows installed kotlin plugin version">
             <add-to-group group-id="ToolsMenu"/>
@@ -33,9 +33,13 @@
                 description="Shows line markers of Main.kt file">
             <add-to-group group-id="ToolsMenu"/>
         </action>
-        <action id="org.jetbrains.RunKotlinFileAction" class="org.jetbrains.RunKotlinFileAction" text="Run Kotlin File"
-                description="Run kotlin file">
+        <action id="org.jetbrains.RunKotlinFileAction" class="org.jetbrains.RunKotlinFileAction" text="Run Main.kt File"
+                description="Run Main.kt file">
             <add-to-group group-id="ToolsMenu"/>]
         </action>
     </actions>
+    <extensions defaultExtensionNs="com.intellij">
+        <notificationGroup id="executionResultNotification"
+                           displayType="BALLOON"/>
+    </extensions>
 </idea-plugin>

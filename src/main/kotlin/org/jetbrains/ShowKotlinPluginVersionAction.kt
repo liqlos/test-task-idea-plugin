@@ -11,7 +11,7 @@ import com.intellij.openapi.ui.Messages
 
 private const val KOTLIN_PLUGIN_ID = "org.jetbrains.kotlin"
 
-class KotlinPluginVersionAction : AnAction() {
+class ShowKotlinPluginVersionAction : AnAction() {
     override fun getActionUpdateThread() = ActionUpdateThread.BGT
 
 
