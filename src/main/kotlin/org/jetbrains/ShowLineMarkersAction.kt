@@ -18,6 +18,9 @@ import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScope
 import org.jetbrains.Util.showErrorMessage
 import org.jetbrains.annotations.NotNull
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 
 private const val KOTLIN_FILE_NAME = "Main.kt"
@@ -58,26 +61,31 @@ private class ShowLineMarkersAction : AnAction() {
         )
     }
 
-    private fun getLineMarkers(document: Document, project: Project): MutableList<LineMarkerInfo<*>> {
-        var lineMarkers = mutableListOf<LineMarkerInfo<*>>()
+    private fun getLineMarkers(document: Document, project: Project): List<LineMarkerInfo<*>> {
         val psiFile = PsiDocumentManager.getInstance(project).getPsiFile(document)!!
 
-        //DaemonCodeAnalyzerEx to have access to isErrorAnalyzingFinished
+        //DaemonCodeAnalyzerEx is used to have access to isErrorAnalyzingFinished
         //seems like in fact isErrorAnalyzingFinished is true when all analyzing is finished
         val codeAnalyzer = DaemonCodeAnalyzerEx.getInstanceEx(project)
+        val future: CompletableFuture<List<LineMarkerInfo<*>>> = CompletableFuture()
 
         if (codeAnalyzer.isErrorAnalyzingFinished(psiFile)) {
-            lineMarkers = DaemonCodeAnalyzerImpl.getLineMarkers(document, project)
+            return DaemonCodeAnalyzerImpl.getLineMarkers(document, project)
         } else {
-            val busConnection = project.messageBus.connect()
-            busConnection.subscribe(DaemonCodeAnalyzer.DAEMON_EVENT_TOPIC, object : DaemonCodeAnalyzer.DaemonListener {
+            val connection = project.messageBus.connect(project)
+            connection.subscribe(DaemonCodeAnalyzer.DAEMON_EVENT_TOPIC, object : DaemonCodeAnalyzer.DaemonListener {
                 override fun daemonFinished(fileEditors: Collection<FileEditor>) {
-                    lineMarkers = DaemonCodeAnalyzerImpl.getLineMarkers(document, project)
+                    future.complete(DaemonCodeAnalyzerImpl.getLineMarkers(document, project))
+                    connection.disconnect()
                 }
             })
-            busConnection.disconnect()
         }
-        return lineMarkers
+
+        return try {
+            future.get(3, TimeUnit.SECONDS)
+        } catch (e: TimeoutException) {
+            emptyList()
+        }
     }
 
     private fun formatLineMarkersForMessage(@NotNull lineMarkers: List<LineMarkerInfo<*>>): String {
