@@ -1,3 +1,11 @@
+# Test Task IntelliJ IDEA Plugin
+
+An IntelliJ IDEA plugin written in Kotlin that demonstrates four IntelliJ Platform development patterns: reading the installed Kotlin plugin version via `PluginManagerCore`, enumerating project external libraries via `LibraryTablesRegistrar`, extracting editor line markers via `DaemonCodeAnalyzerImpl`, and programmatically running a `Main.kt` file through an `ApplicationConfiguration`. Built by Aleksei Bukhalov.
+
+Built with Kotlin 1.8.22, Gradle IntelliJ Plugin 1.14.2, JVM toolchain 17, targeting IntelliJ IDEA 2023.1.3. All four actions register under the **Tools** menu.
+
+---
+
 ### Preconditions:
 We have a template project for ide plugin creation; it will be used for test task implementation. It's recommended to work in the latest stable IDEA.
 How to work with the project and properly run written code?
@@ -22,16 +30,16 @@ How to work with the project and properly run written code?
 -----------------------------------------------------
 
 ### 
-1) Task 1 is implemented in [ShowKotlinPluginVersionAction.kt](https://github.com/liqlos/test-task-plugin/blob/master/src/main/kotlin/org/jetbrains/ShowKotlinPluginVersionAction.kt), if kotlin plugin is not installed, then this action can not be triggered
+1) Task 1 is implemented in [ShowKotlinPluginVersionAction.kt](https://github.com/liqlos/test-task-idea-plugin/blob/master/src/main/kotlin/org/jetbrains/ShowKotlinPluginVersionAction.kt), if kotlin plugin is not installed, then this action can not be triggered
 
-2) Task 2 is implemented in [ShowExternalLibrariesAction.kt](https://github.com/liqlos/test-task-plugin/blob/master/src/main/kotlin/org/jetbrains/ShowExternalLibrariesAction.kt), if there is no external libraries, then action can not be triggered neither
+2) Task 2 is implemented in [ShowExternalLibrariesAction.kt](https://github.com/liqlos/test-task-idea-plugin/blob/master/src/main/kotlin/org/jetbrains/ShowExternalLibrariesAction.kt), if there is no external libraries, then action can not be triggered neither
 
-3) Task 3 is implemented in [ShowLineMarkersAction.kt](https://github.com/liqlos/test-task-plugin/blob/master/src/main/kotlin/org/jetbrains/ShowLineMarkersAction.kt), data from startOffset, endOffset and lineMarkerTooltip fields of the LineMarkerInfo is used.
+3) Task 3 is implemented in [ShowLineMarkersAction.kt](https://github.com/liqlos/test-task-idea-plugin/blob/master/src/main/kotlin/org/jetbrains/ShowLineMarkersAction.kt), data from startOffset, endOffset and lineMarkerTooltip fields of the LineMarkerInfo is used.
    lineMarkerTooltip is formatted because with its full data with html tags in it, it had some problems with displaying in the message element.
    I understand that it is safer to wait for code analysis to complete before printing line markers, I tried an approach with connection.subscribe(DaemonCodeAnalyzer.DAEMON_EVENT_TOPIC (it can be seen in previous commits),
    but couldn't get it to work on time, seems like my code blocks UI thread and analysis stops when action is performed and proceeds after message is closed. 
 
-4) Task 4 is implemented in [RunKotlinFileAction.kt](https://github.com/liqlos/test-task-plugin/blob/master/src/main/kotlin/org/jetbrains/RunKotlinFileAction.kt), this implementation is prone to errors in case file will have compilation problems because result of code analyzing is not taken into account,
+4) Task 4 is implemented in [RunKotlinFileAction.kt](https://github.com/liqlos/test-task-idea-plugin/blob/master/src/main/kotlin/org/jetbrains/RunKotlinFileAction.kt), this implementation is prone to errors in case file will have compilation problems because result of code analyzing is not taken into account,
    and "Kt" extension is hardcoded to avoid premature optimization because the task was about kt file
 
    All classes are private because I don't want some external code to depend on them and them to be used outside each action implementation
@@ -53,3 +61,10 @@ Checks which are more related to IDE:
 - Check that Kotlin plugin can be enabled, disabled, updated, installed, and deleted without errors
 - Check that project opening, code analyzing and dependencies indexing are finishing in appropriate time(no longer than some specific time) on the system with only minimal requirements for IDEA
 - Check that IDEA performance is not degrading with kotlin plugin installed
+
+## Author
+
+Aleksei Bukhalov — SDET specializing in Kotlin, test automation, and AI tooling.
+- Website: https://bukhalov.com
+- GitHub: https://github.com/liqlos
+- LinkedIn: https://www.linkedin.com/in/abukhalov/
