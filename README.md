@@ -64,7 +64,7 @@ Checks which are more related to IDE:
 
 ## Author
 
-Aleksei Bukhalov — SDET specializing in Kotlin, test automation, and AI tooling.
+Aleksei Bukhalov — SDET.
 - Website: https://bukhalov.com
 - GitHub: https://github.com/liqlos
 - LinkedIn: https://www.linkedin.com/in/abukhalov/
